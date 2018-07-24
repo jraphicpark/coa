@@ -1,0 +1,45 @@
+<?php
+
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+
+spl_autoload_register(function ($class_name) {
+	include 'incs/' . $class_name . '.php';
+});
+
+$objTransit = new transitTools();
+
+$rtn = json_encode( array("message" => "An unknown error has occured.") );
+
+$msg = '';
+$err = FALSE;
+
+if ( isset($_GET['route']) ) {
+	$route = $_GET['route'];
+} else {
+	$msg .= 'Route ID was not given. ';
+	$err = TRUE;
+}
+
+if ( isset($_GET['direction']) ) {
+	$direction = $_GET['direction'];
+} else {
+	$msg .= 'Direction was not given. ';
+	$err = TRUE;
+}
+
+if ($err) {
+	$rtn = json_encode( array("message" => $msg) );
+} else {
+	$rtn = $objTransit->getStops($route, $direction);
+}
+
+
+
+print_r( $rtn );
+
+?>
